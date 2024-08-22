@@ -14,12 +14,14 @@ $ git clone https://github.com/DanielProl1xy/NoteWebApp.git
 $ cd NoteWebApp
 $ mvn install
 ```
-Now you have ```.war``` file which you can deploy on your server. On Windows you can use:
+Now you have ```.war``` file in target folder. You can deploy it on your server.
+In my case I use Windows batch script:
 ```bat
 > ./run.bat
 ```
-It deploys server at 8080 port, and you can connect by ```localhost:8080```.
+For this script to work  sure to set ```CATALINA_HOME``` to corresponding apache tomcat directory. 
 
+And finally, server deploys at 8080 port, and you can connect by ```localhost:8080```.
 
 ## TODOs
 - Data base usage improvment
