@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .note {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .note p {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        .note .note-content {
+            max-height: 50px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .note .note-content.expanded {
+            max-height: 1000px; /* Adjust this value to allow for more text */
+            transition: max-height 0.3s ease-in;
+        }
+        .note form {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .note button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .create-note-button {
+            display: block;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Your Notes</h1>
+    </div>
+    <div class="form-container">
+        <form action="/notes/create" method="get">
+            <button type="submit" class="create-note-button">Create Note</button>
+        </form>
+        <div th:each="note : ${user.notes}">
+            <div class="note" th:onclick="toggleNoteContent(this)">
+                <div class="note-content">
+                    <p th:text="${note.text}">...</p>
+                </div>
+                <form th:action="@{/notes/edit}" method="get">
+                    <input type="hidden" th:name="noteid" th:value="${note.uniqueID}" />
+                    <button type="submit" th:name="action" th:value="edit">Edit</button>
+                    <button type="submit" th:name="action" th:value="delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleNoteContent(noteElement) {
+            noteElement.querySelector('.note-content').classList.toggle('expanded');
+        }
+    </script>
+</body>
+</html>
