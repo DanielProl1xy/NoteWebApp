@@ -1,4 +1,4 @@
-package web.springproject.model;
+package web.springproject.model.storages;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,9 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
+import web.springproject.model.BaseNote;
+import web.springproject.model.interfaces.INotesStorage;
+
 @Component
 @PropertySource("classpath:db.properties")
-public class UserDAO {
+public class DataBaseNotesStorage implements INotesStorage {
 
     @Value("${db.url}")
     private String url;
@@ -25,7 +28,7 @@ public class UserDAO {
     private String pass;
 
     private static Connection connection;
-    
+
     @PostConstruct
     private void init()
     {
@@ -40,8 +43,9 @@ public class UserDAO {
             e.printStackTrace();
         }
     }
-    
-    public final List<BaseNote> getNotes()
+
+    @Override
+    public List<BaseNote> GetAllNotes()
     {
         List<BaseNote> notes = new ArrayList<>();
 
@@ -57,11 +61,11 @@ public class UserDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return notes;
     }
 
-    public final BaseNote getNoteWithID(final String id)
+    @Override
+    public final BaseNote GetNoteWithID(final String id)
     {
         if(id.isEmpty()) return null;
         
@@ -83,7 +87,8 @@ public class UserDAO {
         return null;
     }
 
-    public void updateNote(final String id, BaseNote note)
+    @Override
+    public void UpdateNote(final String id, BaseNote note)
     {
         try {
             String q = "UPDATE notes SET userid='user0',id='" + id +  "',txt='" + note.getText() +  "'"
@@ -95,7 +100,8 @@ public class UserDAO {
         }
     }
 
-    public void addNote(final BaseNote note)
+    @Override
+    public void AddNote(final BaseNote note)
     {
         try {
             String q = "INSERT INTO notes VALUES('user0','" + note.getUniqueID() +  "','" + note.getText() +  "')";
@@ -106,7 +112,8 @@ public class UserDAO {
         }
     }
 
-    public void removeNote(final String id)
+    @Override
+    public void RemoveNote(final String id)
     {
         try {
             String q = "DELETE FROM notes WHERE id='" + id + "'";
@@ -116,4 +123,5 @@ public class UserDAO {
             e.printStackTrace();
         }
     }
+    
 }

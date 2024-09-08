@@ -80,7 +80,7 @@
         <form action="/notes/create" method="get">
             <button type="submit" class="create-note-button">Create Note</button>
         </form>
-        <div th:each="note : ${user.notes}">
+        <div th:each="note : ${notes}">
             <div class="note" th:onclick="toggleNoteContent(this)">
                 <div class="note-content">
                     <p th:text="${note.text}">...</p>

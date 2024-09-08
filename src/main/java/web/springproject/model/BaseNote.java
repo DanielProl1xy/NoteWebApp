@@ -3,7 +3,7 @@ package web.springproject.model;
 public class BaseNote {
 
     private String text;
-    private String uniqueID;    
+    private String uniqueID;
     
     public BaseNote(String defaultText, String uid)
     {

@@ -36,5 +36,8 @@
         <property name="viewNames" value="*"/>
     </bean>
 
-    <bean id="user" class="web.springproject.model.UserDAO"/>
+    <bean id ="NotesStorage"
+        class = "web.springproject.model.storages.DataBaseNotesStorage">
+    </bean>
+
 </beans>

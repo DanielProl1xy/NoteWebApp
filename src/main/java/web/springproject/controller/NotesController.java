@@ -1,12 +1,8 @@
-package web.springproject;
+package web.springproject.controller;
 
 import java.nio.file.AccessDeniedException;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,19 +13,28 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import web.springproject.model.BaseNote;
-import web.springproject.model.UserDAO;
+import web.springproject.model.User;
+import web.springproject.model.interfaces.INotesStorage;
+import web.springproject.model.storages.DataBaseNotesStorage;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
 @RequestMapping("/notes")
-@SessionAttributes("user")
-public class MainController {
+@SessionAttributes({"user", "notesStorage"})
+public class NotesController {
 
     @ModelAttribute("user")
-    private UserDAO getUser() {
-        return new UserDAO();
-    } 
+    private User getUser() {
+        return new User();
+    }
+
+    @ModelAttribute("notesStorage")
+    private INotesStorage getStorage()
+    {
+        return new DataBaseNotesStorage();
+    }
 
     @ModelAttribute
     public void checkAccess(Model model) throws AccessDeniedException {
@@ -37,31 +42,32 @@ public class MainController {
     }
 
     @RequestMapping("")
-    public String viewNotes() {
+    public String viewNotes(Model model) {
+        INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
+        model.addAttribute("notes", storage.GetAllNotes());
         return "viewnotes_page";
     }
 
     @GetMapping("/create")
     public String createNote(Model model) {
-        UserDAO user = (UserDAO)model.getAttribute("user");
         String id = UUID.randomUUID().toString();
         BaseNote note = new BaseNote("this is an emtpy note", id);
-        user.addNote(note);
+        INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
+        storage.AddNote(note);
         model.addAttribute("noteid", id);
         model.addAttribute("action", "edit");
         return "redirect:/notes/edit";
-    }
-    
+    }    
     
     @GetMapping("/edit")
     public String edinNote(@RequestParam("noteid") String id, @RequestParam("action") String action, 
                             Model model, RedirectAttributes redirectAttributes) {
-        UserDAO user = (UserDAO)model.getAttribute("user");
-        BaseNote note = user.getNoteWithID(id);
+        INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
+        BaseNote note = storage.GetNoteWithID(id);
 
         if(action.equals("delete"))
         {
-            user.removeNote(id);
+            storage.RemoveNote(id);
             return "redirect:/notes";
         }
 
@@ -73,8 +79,8 @@ public class MainController {
     @PostMapping("/save")
     public String saveNote(@ModelAttribute("note") BaseNote note, @RequestParam("noteid") String id, 
                             Model model, RedirectAttributes redirectAttributes) {
-        UserDAO user = (UserDAO)model.getAttribute("user");
-        user.updateNote(id, note);
+        INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
+        storage.UpdateNote(id, note);
         return "redirect:/notes";
     }
 }
