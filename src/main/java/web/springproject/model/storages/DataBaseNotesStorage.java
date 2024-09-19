@@ -14,6 +14,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import web.springproject.model.BaseNote;
+import web.springproject.model.User;
 import web.springproject.model.interfaces.INotesStorage;
 
 @Component
@@ -32,9 +33,9 @@ public class DataBaseNotesStorage implements INotesStorage {
     @PostConstruct
     private void init()
     {
-        System.out.println("URL: " + url);
-        System.out.println("Username: " + usrname);
-        System.out.println("Password: " + pass);
+        System.out.println("DataBase URL: " + url);
+        System.out.println("DataBase Username: " + usrname);
+        System.out.println("DataBase Password: " + pass);
 
         try {
             Class.forName("org.postgresql.Driver");
@@ -45,12 +46,15 @@ public class DataBaseNotesStorage implements INotesStorage {
     }
 
     @Override
-    public List<BaseNote> GetAllNotes()
+    public List<BaseNote> GetAllNotes(final User user)
     {
+        if(user == null) return null;
+        
         List<BaseNote> notes = new ArrayList<>();
 
+
         try {
-            String q = "SELECT * FROM notes";
+            String q = "SELECT * FROM notes WHERE userid=\'" + user.login + "\'";
             Statement statement = connection.createStatement();
             ResultSet res = statement.executeQuery(q);
             while(res.next())
@@ -65,12 +69,13 @@ public class DataBaseNotesStorage implements INotesStorage {
     }
 
     @Override
-    public final BaseNote GetNoteWithID(final String id)
+    public final BaseNote GetNoteWithID(final User user, final String id)
     {
         if(id.isEmpty()) return null;
+        if(user == null) return null;
         
         try {
-            String q = "SELECT * FROM notes WHERE id=\'" + id + "\'";
+            String q = "SELECT * FROM notes WHERE id=\'" + id + "\' AND userid=\'" + user.login + "\'";
             Statement statement = connection.createStatement();
             ResultSet res = statement.executeQuery(q);
             if(res.next())
@@ -88,10 +93,12 @@ public class DataBaseNotesStorage implements INotesStorage {
     }
 
     @Override
-    public void UpdateNote(final String id, BaseNote note)
+    public void UpdateNote(final User user, final String id, BaseNote note)
     {
+        if(user == null) return;
+
         try {
-            String q = "UPDATE notes SET userid='user0',id='" + id +  "',txt='" + note.getText() +  "'"
+            String q = "UPDATE notes SET userid='" + user.login + "',id='" + id +  "',txt='" + note.getText() +  "'"
             + "WHERE id='" + id + "'";
             Statement statement = connection.createStatement();
             statement.execute(q);
@@ -101,10 +108,12 @@ public class DataBaseNotesStorage implements INotesStorage {
     }
 
     @Override
-    public void AddNote(final BaseNote note)
+    public void AddNote(final User user, final BaseNote note)
     {
+        if(user == null) return;
+
         try {
-            String q = "INSERT INTO notes VALUES('user0','" + note.getUniqueID() +  "','" + note.getText() +  "')";
+            String q = "INSERT INTO notes VALUES(\'" + user.login + "\',\'" + note.getUniqueID() +  "\',\'" + note.getText() +  "\')";
             Statement statement = connection.createStatement();
             statement.execute(q);
         } catch (Exception e) {
@@ -113,10 +122,12 @@ public class DataBaseNotesStorage implements INotesStorage {
     }
 
     @Override
-    public void RemoveNote(final String id)
+    public void RemoveNote(final User user, final String id)
     {
+        if(user == null) return;
+
         try {
-            String q = "DELETE FROM notes WHERE id='" + id + "'";
+            String q = "DELETE FROM notes WHERE id=\'" + id + "\' AND userid=\'" + user.login + "\'";
             Statement statement = connection.createStatement();
             statement.execute(q);
         } catch (Exception e) {

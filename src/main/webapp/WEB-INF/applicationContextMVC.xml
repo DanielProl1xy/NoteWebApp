@@ -34,10 +34,6 @@
         <property name="templateEngine" ref="templateEngine"/>
         <property name="order" value="1"/>
         <property name="viewNames" value="*"/>
-    </bean>
-
-    <bean id ="NotesStorage"
-        class = "web.springproject.model.storages.DataBaseNotesStorage">
-    </bean>
+    </bean>    
 
 </beans>

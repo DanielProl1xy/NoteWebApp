@@ -25,10 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @SessionAttributes({"user", "notesStorage"})
 public class NotesController {
 
-    @ModelAttribute("user")
-    private User getUser() {
-        return new User();
-    }
 
     @ModelAttribute("notesStorage")
     private INotesStorage getStorage()
@@ -38,13 +34,15 @@ public class NotesController {
 
     @ModelAttribute
     public void checkAccess(Model model) throws AccessDeniedException {
-        // TODO: check if access granted
+        User user = (User)model.getAttribute("user");
+        if(user == null) throw new AccessDeniedException("Not logged in!");
     }
 
     @RequestMapping("")
     public String viewNotes(Model model) {
         INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
-        model.addAttribute("notes", storage.GetAllNotes());
+        User user = (User)model.getAttribute("user");
+        model.addAttribute("notes", storage.GetAllNotes(user));
         return "viewnotes_page";
     }
 
@@ -53,7 +51,8 @@ public class NotesController {
         String id = UUID.randomUUID().toString();
         BaseNote note = new BaseNote("this is an emtpy note", id);
         INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
-        storage.AddNote(note);
+        User user = (User)model.getAttribute("user");
+        storage.AddNote(user, note);
         model.addAttribute("noteid", id);
         model.addAttribute("action", "edit");
         return "redirect:/notes/edit";
@@ -63,11 +62,12 @@ public class NotesController {
     public String edinNote(@RequestParam("noteid") String id, @RequestParam("action") String action, 
                             Model model, RedirectAttributes redirectAttributes) {
         INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
-        BaseNote note = storage.GetNoteWithID(id);
+        User user = (User)model.getAttribute("user");
+        BaseNote note = storage.GetNoteWithID(user, id);
 
         if(action.equals("delete"))
         {
-            storage.RemoveNote(id);
+            storage.RemoveNote(user, id);
             return "redirect:/notes";
         }
 
@@ -80,7 +80,8 @@ public class NotesController {
     public String saveNote(@ModelAttribute("note") BaseNote note, @RequestParam("noteid") String id, 
                             Model model, RedirectAttributes redirectAttributes) {
         INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
-        storage.UpdateNote(id, note);
+        User user = (User)model.getAttribute("user");
+        storage.UpdateNote(user, id, note);
         return "redirect:/notes";
     }
 }

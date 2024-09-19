@@ -1,14 +1,15 @@
 package web.springproject.model.interfaces;
 
 import web.springproject.model.BaseNote;
-import java.util.List;
+import web.springproject.model.User;
 
+import java.util.List;
 
 public interface INotesStorage
 {
-    public List<BaseNote> GetAllNotes();
-    public BaseNote GetNoteWithID(final String uid);
-    public void UpdateNote(final String id, BaseNote note);
-    public void AddNote(final BaseNote note);
-    public void RemoveNote(final String id);
+    public List<BaseNote> GetAllNotes(final User user);
+    public BaseNote GetNoteWithID(final User user, final String uid);
+    public void UpdateNote(final User user, final String id, BaseNote note);
+    public void AddNote(final User user, final BaseNote note);
+    public void RemoveNote(final User user, final String id);
 }
