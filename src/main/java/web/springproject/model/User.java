@@ -7,8 +7,8 @@ public class User {
 
     public User(final String log, final String username)
     {
-        login = log;
-        name = username;
+        login = new String(log);
+        name = new String(username);
     }
 
     @Override
