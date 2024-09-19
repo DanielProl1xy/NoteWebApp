@@ -71,17 +71,17 @@ public class NotesController {
             return "redirect:/notes";
         }
 
-        model.addAttribute("note", note);
+        model.addAttribute("notetext", note.getText());
         model.addAttribute("noteid", id);        
         return "edit_page";
     }
     
     @PostMapping("/save")
-    public String saveNote(@ModelAttribute("note") BaseNote note, @RequestParam("noteid") String id, 
+    public String saveNote(@ModelAttribute("notetext") String text, @RequestParam("noteid") String id, 
                             Model model, RedirectAttributes redirectAttributes) {
         INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
         User user = (User)model.getAttribute("user");
-        storage.UpdateNote(user, id, note);
+        storage.UpdateNote(user, id, text);
         return "redirect:/notes";
     }
 }

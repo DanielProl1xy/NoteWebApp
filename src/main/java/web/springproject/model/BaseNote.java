@@ -5,12 +5,12 @@ import java.util.Objects;
 public class BaseNote {
 
     private String text;
-    private String uniqueID;
+    private final String uniqueID;
     
-    public BaseNote(String defaultText, String uid)
+    public BaseNote(String defaultText, final String uid)
     {
         text = defaultText;
-        uniqueID = uid;
+        uniqueID = new String(uid);
     }
 
     public String getText()

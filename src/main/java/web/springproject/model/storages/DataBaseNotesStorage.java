@@ -93,13 +93,13 @@ public class DataBaseNotesStorage implements INotesStorage {
     }
 
     @Override
-    public void UpdateNote(final User user, final String id, BaseNote note)
+    public void UpdateNote(final User user, final String id, String text)
     {
         if(user == null) return;
 
         try {
-            String q = "UPDATE notes SET userid='" + user.login + "',id='" + id +  "',txt='" + note.getText() +  "'"
-            + "WHERE id='" + id + "'";
+            String q = "UPDATE notes SET txt=\'" + text +  "\'"
+            + "WHERE id=\'" + id + "\' AND userid=\'" + user.login + "\'";
             Statement statement = connection.createStatement();
             statement.execute(q);
         } catch (Exception e) {

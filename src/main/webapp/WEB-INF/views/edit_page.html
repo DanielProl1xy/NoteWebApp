@@ -59,9 +59,9 @@
         <h1>Edit Note</h1>
     </div>
     <div class="form-container">
-        <form action="#" th:action="@{/notes/save}" th:object="${note}" method="post">
+        <form action="#" th:action="@{/notes/save}" method="post">
             <label for="noteText">Note text:</label>
-            <textarea id="noteText" th:field="*{text}" placeholder="Enter your note here..."></textarea>
+            <textarea id="noteText" th:name="notetext" th:text="${notetext}" placeholder="Enter your note here..."></textarea>
             <input type="hidden" th:name="noteid" th:value="${noteid}" />
             <button type="submit">Save</button>
         </form>
