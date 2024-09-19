@@ -1,5 +1,7 @@
 package web.springproject.model;
 
+import java.util.Objects;
+
 public class BaseNote {
 
     private String text;
@@ -36,10 +38,8 @@ public class BaseNote {
     public boolean equals(Object other)
     {
         if(other == null) return false;
-        if(!(other instanceof BaseNote)) return false;
+        if(other.getClass() != getClass()) return false;
 
-        BaseNote othernote = (BaseNote) other;
-        return othernote.uniqueID == this.uniqueID;
+        return Objects.equals(other, this);
     }
-
 }
