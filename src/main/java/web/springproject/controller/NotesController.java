@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import web.springproject.model.BaseNote;
 import web.springproject.model.User;
 import web.springproject.model.interfaces.INotesStorage;
-import web.springproject.model.storages.DataBaseNotesStorage;
+import web.springproject.model.storages.SQLNotesStorage;
 
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -29,17 +29,17 @@ public class NotesController {
     @ModelAttribute("notesStorage")
     private INotesStorage getStorage()
     {
-        return new DataBaseNotesStorage();
+        return new SQLNotesStorage();
     }
 
     @ModelAttribute
-    public void checkAccess(Model model) throws AccessDeniedException {
+    private void checkAccess(Model model) throws AccessDeniedException {
         User user = (User)model.getAttribute("user");
         if(user == null) throw new AccessDeniedException("Not logged in!");
     }
 
     @RequestMapping("")
-    public String viewNotes(Model model) {
+    private String viewNotes(Model model) {
         INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
         User user = (User)model.getAttribute("user");
         model.addAttribute("notes", storage.GetAllNotes(user));
@@ -47,7 +47,7 @@ public class NotesController {
     }
 
     @GetMapping("/create")
-    public String createNote(Model model) {
+    private String createNote(Model model) {
         String id = UUID.randomUUID().toString();
         BaseNote note = new BaseNote("this is an emtpy note", id);
         INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
@@ -59,7 +59,7 @@ public class NotesController {
     }    
     
     @GetMapping("/edit")
-    public String edinNote(@RequestParam("noteid") String id, @RequestParam("action") String action, 
+    private String edinNote(@RequestParam("noteid") String id, @RequestParam("action") String action, 
                             Model model, RedirectAttributes redirectAttributes) {
         INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
         User user = (User)model.getAttribute("user");
@@ -77,7 +77,7 @@ public class NotesController {
     }
     
     @PostMapping("/save")
-    public String saveNote(@ModelAttribute("notetext") String text, @RequestParam("noteid") String id, 
+    private String saveNote(@ModelAttribute("notetext") String text, @RequestParam("noteid") String id, 
                             Model model, RedirectAttributes redirectAttributes) {
         INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
         User user = (User)model.getAttribute("user");

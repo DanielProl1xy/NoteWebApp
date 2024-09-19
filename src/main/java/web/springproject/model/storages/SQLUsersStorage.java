@@ -16,7 +16,7 @@ import web.springproject.model.User;
 
 @Component
 @PropertySource("classpath:db.properties")
-public class DataBaseUsersStorage implements IUsersStorage {
+public class SQLUsersStorage implements IUsersStorage {
 
     @Value("${db.url}")
     private String url;

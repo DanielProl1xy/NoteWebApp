@@ -19,7 +19,7 @@ import web.springproject.model.interfaces.INotesStorage;
 
 @Component
 @PropertySource("classpath:db.properties")
-public class DataBaseNotesStorage implements INotesStorage {
+public class SQLNotesStorage implements INotesStorage {
 
     @Value("${db.url}")
     private String url;

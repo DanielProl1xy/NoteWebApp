@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import web.springproject.model.User;
 import web.springproject.model.interfaces.IUsersStorage;
-import web.springproject.model.storages.DataBaseUsersStorage;
+import web.springproject.model.storages.SQLUsersStorage;
 
 
 @Controller
@@ -23,16 +23,16 @@ public class UserController {
     @ModelAttribute("usersStorage")
     private IUsersStorage getUsersStorage()
     {
-        return new DataBaseUsersStorage();
+        return new SQLUsersStorage();
     }
 
     @GetMapping("login")
-    public String LoginPage(Model model) {
+    private String LoginPage(Model model) {
         return "login_page";
     }
 
     @PostMapping("login")
-    public String LoginAction(@RequestParam("login") String login,
+    private String LoginAction(@RequestParam("login") String login,
                                 @RequestParam("password") String password,
                                 Model model,
                                 RedirectAttributes redir) {
@@ -52,12 +52,12 @@ public class UserController {
     
 
     @GetMapping("register")
-    public String RegisterPage(Model model) {
+    private String RegisterPage(Model model) {
         return "register_page";
     }
 
     @PostMapping("register")
-    public String RegisterAction(@RequestParam("login") String login,
+    private String RegisterAction(@RequestParam("login") String login,
                                 @RequestParam("name") String name,
                                 @RequestParam("password") String password,
                                 Model model,
