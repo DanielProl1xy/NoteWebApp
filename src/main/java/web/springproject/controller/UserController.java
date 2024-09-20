@@ -1,5 +1,6 @@
 package web.springproject.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,38 +11,31 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import web.springproject.model.User;
-import web.springproject.model.interfaces.IUsersStorage;
-import web.springproject.model.storages.SQLUsersStorage;
-
+import web.springproject.model.UserLoginService;
+import web.springproject.model.UserLoginService.LoginResponseStructure;
+import web.springproject.model.UserLoginService.LoginResult;
 
 @Controller
 @RequestMapping("/")
-@SessionAttributes({"usersStorage"})
+@SessionAttributes({"loginService"})
 public class UserController {
 
-    @ModelAttribute("usersStorage")
-    private IUsersStorage getUsersStorage()
-    {
-        return new SQLUsersStorage();
-    }
+    @Autowired
+    private UserLoginService loginService;
 
     @GetMapping("login")
-    private String LoginPage(Model model) {
+    private String loginPage(Model model) {
         return "login_page";
     }
 
     @PostMapping("login")
-    private String LoginAction(@RequestParam("login") String login,
+    private String loginAction(@RequestParam("login") String login,
                                 @RequestParam("password") String password,
-                                Model model,
                                 RedirectAttributes redir) {
-
-        IUsersStorage users = (IUsersStorage)model.getAttribute("usersStorage");
-        User user = users.LoginUser(login, password);
-        if(user !=  null)
+        final LoginResponseStructure res = loginService.LoginUser(login, password);
+        if(res.result ==  LoginResult.LOGIN_SUCCESS)
         {
-            redir.addFlashAttribute("user", user);
+            redir.addFlashAttribute("login", res);
             return "redirect:/notes";
         }
         else
@@ -52,28 +46,32 @@ public class UserController {
     
 
     @GetMapping("register")
-    private String RegisterPage(Model model) {
+    private String registerPage(Model model) {
         return "register_page";
     }
 
     @PostMapping("register")
-    private String RegisterAction(@RequestParam("login") String login,
+    private String registerAction(@RequestParam("login") String login,
                                 @RequestParam("name") String name,
                                 @RequestParam("password") String password,
-                                Model model,
                                 RedirectAttributes redir) {
-
-        IUsersStorage users = (IUsersStorage)model.getAttribute("usersStorage");
-
-        if(users.IsLoginTaken(login))
+        final LoginResponseStructure res = loginService.RegisterUser(login, name, password);
+        if(res.result == LoginResult.REGISTER_SUCCESS)
+        {
+            redir.addFlashAttribute("login", res);
+            return "redirect:/notes";
+        }
+        else
         {
             return "redirect:/register";
         }
-        
-        users.RegisterUser(login, name, password);
-
-        redir.addFlashAttribute("user", new User(login, password));
-        return "redirect:/notes";
     }
+
+    @PostMapping("logout")
+    public String logoutAction(@ModelAttribute LoginResponseStructure login, RedirectAttributes redir) {
+        loginService.InvalidateToken(login.token);
+        return "redirect:/login";
+    }
+    
     
 }

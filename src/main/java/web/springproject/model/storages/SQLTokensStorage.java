@@ -1,22 +1,27 @@
 package web.springproject.model.storages;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import web.springproject.model.interfaces.IUsersStorage;
-import web.springproject.model.User;
 
-@Component("SQLUsersStorage")
+import web.springproject.model.User;
+import web.springproject.model.interfaces.ITokensStorage;
+import web.springproject.model.interfaces.IUsersStorage;
+
+@Component("SQLTokensStorage")
 @PropertySource("classpath:db.properties")
-public class SQLUsersStorage implements IUsersStorage {
+public class SQLTokensStorage implements ITokensStorage {
 
     @Value("${db.url}")
     private String url;
@@ -26,6 +31,10 @@ public class SQLUsersStorage implements IUsersStorage {
     private String pass;
 
     private static Connection connection;
+
+    @Autowired
+    @Qualifier("SQLUsersStorage")
+    private IUsersStorage usersStorage;
 
     @PostConstruct
     private void init() {
@@ -42,28 +51,47 @@ public class SQLUsersStorage implements IUsersStorage {
     }
 
     @Override
-    public boolean IsLoginTaken(String login) {
+    public void StoreToken(User user, String token) {
+
         try {
-            String q = "SELECT * FROM users WHERE userLogin=\'" + login + "\'";
-            Statement statement = connection.createStatement();
-            ResultSet res = statement.executeQuery(q);
-            
-            return res.next();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return true;
-    }
-
-    @Override
-    public User RegisterUser(String login, String name, int hashedpassword) {
-        try {
-            String q = "INSERT INTO users VALUES(\'" + login + "\',\'" + name +  "\',\'" + hashedpassword +  "\')";
+            // TODO: check for repeating
+            String q = "INSERT INTO tokens VALUES(\'" + user.login + "\',\'" + token + "\')";
             Statement statement = connection.createStatement();
             statement.execute(q);
-            return new User(login, name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void DeleteToken(String token) {
+        // TODO
+    }
+
+    @Override
+    public boolean ContainsToken(User user, String token) {
+        
+        try {
+            String q = "SELECT * FROM tokens WHERE userLogin=\'" + user.login + "\' AND token=\'" + token + "\'";
+            Statement statement = connection.createStatement();
+            ResultSet res = statement.executeQuery(q);            
+            return res.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public User GetUserByToken(String token) {
+        try {
+            String q = "SELECT * FROM tokens WHERE token=\'" + token + "\'";
+            Statement statement = connection.createStatement();
+            ResultSet res = statement.executeQuery(q);         
+            if(res.next())
+            {
+                return usersStorage.GetUserByLogin(res.getString("userLogin"));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,46 +99,19 @@ public class SQLUsersStorage implements IUsersStorage {
     }
 
     @Override
-    public User LoginUser(String login, int hashedpassword) {
+    public List<String> GetTokensForUser(User user) {
+        List<String> tokens = new ArrayList<>();
         try {
-            String q = "SELECT * FROM users WHERE userLogin=\'" + login + "\'";
+            String q = "SELECT token FROM tokens WHERE userLogin=\'" + user.login + "\'";
             Statement statement = connection.createStatement();
-            ResultSet res = statement.executeQuery(q);
-            
-            if(res.next())
+            ResultSet res = statement.executeQuery(q);         
+            while(res.next())
             {
-                if(res.getInt("userPasswordHash") == hashedpassword)
-                {
-                    User user = new User(res.getString(1), res.getString(2));
-                    return user;
-                }
-                return null;
+                tokens.add(res.getString("token"));
             }
-            return null;
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
-    }
-
-    @Override
-    public User GetUserByLogin(String login) {
-        try {
-            String q = "SELECT * FROM users WHERE userLogin=\'" + login + "\'";
-            Statement statement = connection.createStatement();
-            ResultSet res = statement.executeQuery(q);
-            
-            if(res.next())
-            {
-                return new User(res.getString(1), res.getString(2));
-            }
-            return null;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    
+        return tokens;
+    }    
 }

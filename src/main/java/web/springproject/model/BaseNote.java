@@ -1,45 +1,27 @@
 package web.springproject.model;
 
-import java.util.Objects;
+import org.springframework.lang.NonNull;
 
 public class BaseNote {
 
     private String text;
-    private final String uniqueID;
+    public final String uniqueID;
     
-    public BaseNote(String defaultText, final String uid)
-    {
+    public BaseNote(String defaultText, @NonNull final String uid) {
         text = defaultText;
         uniqueID = new String(uid);
     }
 
-    public String getText()
-    {
+    public String getText() {
         return text;
     }
     
-    public void setText(String newText)
-    {
+    public void setText(String newText) {
         text = newText;
     }
-
-    public final String getUniqueID()
-    {
-        return uniqueID;
-    }
-
-    @Override
-    public String toString()
-    {
-        return this.text;
-    }
     
-    @Override 
-    public boolean equals(Object other)
-    {
-        if(other == null) return false;
-        if(other.getClass() != getClass()) return false;
-
-        return Objects.equals(other, this);
+    @Override
+    public String toString() {
+        return this.text;
     }
 }

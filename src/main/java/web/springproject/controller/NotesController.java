@@ -1,8 +1,8 @@
 package web.springproject.controller;
 
 import java.nio.file.AccessDeniedException;
-import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,47 +13,46 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import web.springproject.model.BaseNote;
+import web.springproject.model.NotesService;
 import web.springproject.model.User;
-import web.springproject.model.interfaces.INotesStorage;
-import web.springproject.model.storages.SQLNotesStorage;
+import web.springproject.model.UserLoginService;
+import web.springproject.model.UserLoginService.LoginResponseStructure;
 
 import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
 @RequestMapping("/notes")
-@SessionAttributes({"user", "notesStorage"})
+@SessionAttributes({"login"})
 public class NotesController {
 
+    @Autowired
+    private UserLoginService loginService;
 
-    @ModelAttribute("notesStorage")
-    private INotesStorage getStorage()
-    {
-        return new SQLNotesStorage();
-    }
+    @Autowired
+    private NotesService notesService;
 
     @ModelAttribute
     private void checkAccess(Model model) throws AccessDeniedException {
-        User user = (User)model.getAttribute("user");
-        if(user == null) throw new AccessDeniedException("Not logged in!");
+        LoginResponseStructure res = (LoginResponseStructure)model.getAttribute("login");
+        if(res == null) throw new AccessDeniedException("not logged in");
+        User user = loginService.CheckToken(res.token);
+        if(!res.user.equals(user) || user == null) throw new AccessDeniedException("invalid login data");
     }
 
     @RequestMapping("")
     private String viewNotes(Model model) {
-        INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
-        User user = (User)model.getAttribute("user");
-        model.addAttribute("notes", storage.GetAllNotes(user));
+        final LoginResponseStructure res = (LoginResponseStructure)model.getAttribute("login");
+        model.addAttribute("notes", notesService.GetAllNotes(res.user));
         return "viewnotes_page";
     }
 
     @GetMapping("/create")
     private String createNote(Model model) {
-        String id = UUID.randomUUID().toString();
-        BaseNote note = new BaseNote("this is an emtpy note", id);
-        INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
-        User user = (User)model.getAttribute("user");
-        storage.AddNote(user, note);
-        model.addAttribute("noteid", id);
+
+        LoginResponseStructure res = (LoginResponseStructure)model.getAttribute("login");
+        BaseNote newNote = notesService.CreateNote(res.user);
+        model.addAttribute("noteid", newNote.uniqueID);
         model.addAttribute("action", "edit");
         return "redirect:/notes/edit";
     }    
@@ -61,15 +60,16 @@ public class NotesController {
     @GetMapping("/edit")
     private String edinNote(@RequestParam("noteid") String id, @RequestParam("action") String action, 
                             Model model, RedirectAttributes redirectAttributes) {
-        INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
-        User user = (User)model.getAttribute("user");
-        BaseNote note = storage.GetNoteWithID(user, id);
+        final LoginResponseStructure res = (LoginResponseStructure)model.getAttribute("login");
+
 
         if(action.equals("delete"))
         {
-            storage.RemoveNote(user, id);
+            notesService.DeleteNote(res.user, id);
             return "redirect:/notes";
         }
+
+        BaseNote note = notesService.GetNote(res.user, id);
 
         model.addAttribute("notetext", note.getText());
         model.addAttribute("noteid", id);        
@@ -79,9 +79,8 @@ public class NotesController {
     @PostMapping("/save")
     private String saveNote(@ModelAttribute("notetext") String text, @RequestParam("noteid") String id, 
                             Model model, RedirectAttributes redirectAttributes) {
-        INotesStorage storage = (INotesStorage)model.getAttribute("notesStorage");
-        User user = (User)model.getAttribute("user");
-        storage.UpdateNote(user, id, text);
+        final LoginResponseStructure res = (LoginResponseStructure)model.getAttribute("login");
+        notesService.UpdateNote(res.user, new BaseNote(text, id));
         return "redirect:/notes";
     }
 }

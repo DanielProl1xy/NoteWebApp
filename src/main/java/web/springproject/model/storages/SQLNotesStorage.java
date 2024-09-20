@@ -17,7 +17,7 @@ import web.springproject.model.BaseNote;
 import web.springproject.model.User;
 import web.springproject.model.interfaces.INotesStorage;
 
-@Component
+@Component("SQLNotesStorage")
 @PropertySource("classpath:db.properties")
 public class SQLNotesStorage implements INotesStorage {
 
@@ -31,8 +31,7 @@ public class SQLNotesStorage implements INotesStorage {
     private static Connection connection;
 
     @PostConstruct
-    private void init()
-    {
+    private void init() {
         System.out.println("DataBase URL: " + url);
         System.out.println("DataBase Username: " + usrname);
         System.out.println("DataBase Password: " + pass);
@@ -46,8 +45,8 @@ public class SQLNotesStorage implements INotesStorage {
     }
 
     @Override
-    public List<BaseNote> GetAllNotes(final User user)
-    {
+    public List<BaseNote> GetAllNotes(final User user) {
+
         if(user == null) return null;
         
         List<BaseNote> notes = new ArrayList<>();
@@ -69,8 +68,8 @@ public class SQLNotesStorage implements INotesStorage {
     }
 
     @Override
-    public final BaseNote GetNoteWithID(final User user, final String id)
-    {
+    public final BaseNote GetNoteWithID(final User user, final String id) {
+
         if(id.isEmpty()) return null;
         if(user == null) return null;
         
@@ -93,8 +92,8 @@ public class SQLNotesStorage implements INotesStorage {
     }
 
     @Override
-    public void UpdateNote(final User user, final String id, String text)
-    {
+    public void UpdateNote(final User user, final String id, String text) {
+
         if(user == null) return;
 
         try {
@@ -108,12 +107,12 @@ public class SQLNotesStorage implements INotesStorage {
     }
 
     @Override
-    public void AddNote(final User user, final BaseNote note)
-    {
+    public void AddNote(final User user, final BaseNote note) {
+        
         if(user == null) return;
 
         try {
-            String q = "INSERT INTO notes VALUES(\'" + user.login + "\',\'" + note.getUniqueID() +  "\',\'" + note.getText() +  "\')";
+            String q = "INSERT INTO notes VALUES(\'" + user.login + "\',\'" + note.uniqueID +  "\',\'" + note.getText() +  "\')";
             Statement statement = connection.createStatement();
             statement.execute(q);
         } catch (Exception e) {
@@ -122,8 +121,8 @@ public class SQLNotesStorage implements INotesStorage {
     }
 
     @Override
-    public void RemoveNote(final User user, final String id)
-    {
+    public void RemoveNote(final User user, final String id) {
+
         if(user == null) return;
 
         try {
