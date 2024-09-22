@@ -1,6 +1,7 @@
 package web.springproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import web.springproject.model.UserLoginService.LoginResult;
 public class UserController {
 
     @Autowired
+    @Qualifier("userLoginServiceBean")
     private UserLoginService loginService;
 
     @GetMapping("login")

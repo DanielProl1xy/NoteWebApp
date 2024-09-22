@@ -14,11 +14,11 @@ import web.springproject.model.interfaces.IUsersStorage;
 public class UserLoginService {
 
     @Autowired
-    @Qualifier("SQLUsersStorage")
+    @Qualifier("usersStorage")
     private IUsersStorage usersStorage; 
 
     @Autowired
-    @Qualifier("SQLTokensStorage")
+    @Qualifier("tokensStorage")
     private ITokensStorage tokensStorage;
 
     public enum LoginResult {

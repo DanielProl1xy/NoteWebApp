@@ -14,7 +14,7 @@ import web.springproject.model.interfaces.INotesStorage;
 public class NotesService {
     
     @Autowired
-    @Qualifier("SQLNotesStorage")
+    @Qualifier("notesStorage")
     INotesStorage notesStorage;
 
     public BaseNote CreateNote(@NonNull final User user) {
