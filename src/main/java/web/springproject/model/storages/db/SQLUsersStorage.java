@@ -1,4 +1,4 @@
-package web.springproject.model.storages;
+package web.springproject.model.storages.db;
 
 
 import java.sql.Connection;

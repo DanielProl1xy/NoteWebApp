@@ -1,4 +1,4 @@
-package web.springproject.model.storages;
+package web.springproject.model.storages.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -65,7 +65,13 @@ public class SQLTokensStorage implements ITokensStorage {
 
     @Override
     public void DeleteToken(String token) {
-        // TODO
+        try {
+            String q = "DELETE FROM tokens WHERE token=\'" + token + "\'";
+            Statement statement = connection.createStatement();
+            statement.execute(q);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

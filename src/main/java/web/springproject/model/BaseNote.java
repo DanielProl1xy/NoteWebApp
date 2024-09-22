@@ -17,7 +17,7 @@ public class BaseNote {
     }
     
     public void setText(String newText) {
-        text = newText;
+        text = new String(newText);
     }
     
     @Override

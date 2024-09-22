@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -32,10 +31,11 @@ public class UserController {
     private String loginAction(@RequestParam("login") String login,
                                 @RequestParam("password") String password,
                                 RedirectAttributes redir) {
+
         final LoginResponseStructure res = loginService.LoginUser(login, password);
         if(res.result ==  LoginResult.LOGIN_SUCCESS)
         {
-            redir.addFlashAttribute("login", res);
+            redir.addFlashAttribute("token", res.token);
             return "redirect:/notes";
         }
         else
@@ -58,7 +58,8 @@ public class UserController {
         final LoginResponseStructure res = loginService.RegisterUser(login, name, password);
         if(res.result == LoginResult.REGISTER_SUCCESS)
         {
-            redir.addFlashAttribute("login", res);
+            
+            redir.addFlashAttribute("token", new String(res.token));
             return "redirect:/notes";
         }
         else
@@ -68,8 +69,8 @@ public class UserController {
     }
 
     @PostMapping("logout")
-    public String logoutAction(@ModelAttribute LoginResponseStructure login, RedirectAttributes redir) {
-        loginService.InvalidateToken(login.token);
+    public String logoutAction(@RequestParam("token") String token, RedirectAttributes redir) {
+        loginService.InvalidateToken(token);
         return "redirect:/login";
     }
     

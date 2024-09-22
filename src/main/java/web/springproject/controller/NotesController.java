@@ -16,14 +16,13 @@ import web.springproject.model.BaseNote;
 import web.springproject.model.NotesService;
 import web.springproject.model.User;
 import web.springproject.model.UserLoginService;
-import web.springproject.model.UserLoginService.LoginResponseStructure;
 
 import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
 @RequestMapping("/notes")
-@SessionAttributes({"login"})
+@SessionAttributes({"token"})
 public class NotesController {
 
     @Autowired
@@ -34,24 +33,28 @@ public class NotesController {
 
     @ModelAttribute
     private void checkAccess(Model model) throws AccessDeniedException {
-        LoginResponseStructure res = (LoginResponseStructure)model.getAttribute("login");
-        if(res == null) throw new AccessDeniedException("not logged in");
-        User user = loginService.CheckToken(res.token);
-        if(!res.user.equals(user) || user == null) throw new AccessDeniedException("invalid login data");
+        final String token = (String) model.getAttribute("token");
+        if(token == null) throw new AccessDeniedException("Token is null");
+        if(token.isEmpty()) throw new AccessDeniedException("Token is emtpy");
+        final User user = loginService.CheckToken(token);
+        if(user == null) throw new AccessDeniedException("Ivnalid token");
+
+        model.addAttribute("user", user);
+
     }
 
     @RequestMapping("")
     private String viewNotes(Model model) {
-        final LoginResponseStructure res = (LoginResponseStructure)model.getAttribute("login");
-        model.addAttribute("notes", notesService.GetAllNotes(res.user));
+        final User user = (User) model.getAttribute("user");
+        model.addAttribute("notes", notesService.GetAllNotes(user));
         return "viewnotes_page";
     }
 
     @GetMapping("/create")
     private String createNote(Model model) {
 
-        LoginResponseStructure res = (LoginResponseStructure)model.getAttribute("login");
-        BaseNote newNote = notesService.CreateNote(res.user);
+        final User user = (User) model.getAttribute("user");
+        BaseNote newNote = notesService.CreateNote(user);
         model.addAttribute("noteid", newNote.uniqueID);
         model.addAttribute("action", "edit");
         return "redirect:/notes/edit";
@@ -60,16 +63,15 @@ public class NotesController {
     @GetMapping("/edit")
     private String edinNote(@RequestParam("noteid") String id, @RequestParam("action") String action, 
                             Model model, RedirectAttributes redirectAttributes) {
-        final LoginResponseStructure res = (LoginResponseStructure)model.getAttribute("login");
+        final User user = (User) model.getAttribute("user");
 
 
-        if(action.equals("delete"))
-        {
-            notesService.DeleteNote(res.user, id);
+        if(action.equals("delete")) {
+            notesService.DeleteNote(user, id);
             return "redirect:/notes";
         }
 
-        BaseNote note = notesService.GetNote(res.user, id);
+        BaseNote note = notesService.GetNote(user, id);
 
         model.addAttribute("notetext", note.getText());
         model.addAttribute("noteid", id);        
@@ -79,8 +81,8 @@ public class NotesController {
     @PostMapping("/save")
     private String saveNote(@ModelAttribute("notetext") String text, @RequestParam("noteid") String id, 
                             Model model, RedirectAttributes redirectAttributes) {
-        final LoginResponseStructure res = (LoginResponseStructure)model.getAttribute("login");
-        notesService.UpdateNote(res.user, new BaseNote(text, id));
+        final User user = (User) model.getAttribute("user");
+        notesService.UpdateNote(user, new BaseNote(text, id));
         return "redirect:/notes";
     }
 }
