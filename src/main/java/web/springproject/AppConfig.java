@@ -16,27 +16,27 @@ import web.springproject.model.storages.db.SQLUsersStorage;
 public class AppConfig {
     
     @Bean("userLoginServiceBean")
-    private UserLoginService GetUserLoginService() {
+    public UserLoginService GetUserLoginService() {
         return new UserLoginService();
     }
 
     @Bean("notesServiceBean")
-    private NotesService GetNotesService() {
+    public NotesService GetNotesService() {
         return new NotesService();
     }
 
     @Bean("notesStorage")
-    private INotesStorage GetNotesStorage() {
+    public INotesStorage GetNotesStorage() {
         return new SQLNotesStorage();
     }
 
     @Bean("tokensStorage")
-    private ITokensStorage GetTokensStorage() {
+    public ITokensStorage GetTokensStorage() {
         return new SQLTokensStorage();
     }
 
     @Bean("usersStorage")
-    private IUsersStorage GetUsersStorage() {
+    public IUsersStorage GetUsersStorage() {
         return new SQLUsersStorage();
     }
 }

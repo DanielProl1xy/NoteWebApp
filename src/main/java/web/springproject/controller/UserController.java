@@ -23,12 +23,12 @@ public class UserController {
     private UserLoginService loginService;
 
     @GetMapping("login")
-    private String loginPage(Model model) {
+    public String loginPage(Model model) {
         return "login_page";
     }
 
     @PostMapping("login")
-    private String loginAction(@RequestParam("login") String login,
+    public String loginAction(@RequestParam("login") String login,
                                 @RequestParam("password") String password,
                                 RedirectAttributes redir) {
 
@@ -46,12 +46,12 @@ public class UserController {
     
 
     @GetMapping("register")
-    private String registerPage(Model model) {
+    public String registerPage(Model model) {
         return "register_page";
     }
 
     @PostMapping("register")
-    private String registerAction(@RequestParam("login") String login,
+    public String registerAction(@RequestParam("login") String login,
                                 @RequestParam("name") String name,
                                 @RequestParam("password") String password,
                                 RedirectAttributes redir) {
@@ -73,6 +73,4 @@ public class UserController {
         loginService.InvalidateToken(token);
         return "redirect:/login";
     }
-    
-    
 }

@@ -100,10 +100,11 @@
                 <div class="note-content">
                     <p th:text="${note.text}">...</p>
                 </div>
-                <form th:action="@{/notes/edit}" method="get">
-                    <input type="hidden" th:name="noteid" th:value="${note.uniqueID}" />
-                    <button type="submit" th:name="action" th:value="edit">Edit</button>
-                    <button type="submit" th:name="action" th:value="delete">Delete</button>
+                <form th:action="@{/notes/{noteid}/edit (noteid=${note.uniqueID})}" method="get">
+                    <button type="submit">Edit</button>
+                </form>
+                <form th:action="@{/notes/{noteid}/delete (noteid=${note.uniqueID})}" method="get">
+                    <button type="submit">Delete</button>
                 </form>
             </div>
         </div>
