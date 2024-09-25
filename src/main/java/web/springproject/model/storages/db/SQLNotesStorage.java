@@ -11,13 +11,13 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import web.springproject.model.BaseNote;
 import web.springproject.model.User;
 import web.springproject.model.interfaces.INotesStorage;
 
-@Component("SQLNotesStorage")
+@Repository("SQLNotesStorage")
 @PropertySource("classpath:db.properties")
 public class SQLNotesStorage implements INotesStorage {
 

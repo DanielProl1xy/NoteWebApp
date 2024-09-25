@@ -6,11 +6,11 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import web.springproject.model.interfaces.INotesStorage;
 
-@Component
+@Service
 public class NotesService {
     
     @Autowired

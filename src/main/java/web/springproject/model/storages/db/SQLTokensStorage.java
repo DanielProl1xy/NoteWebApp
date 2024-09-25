@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import web.springproject.model.User;
 import web.springproject.model.interfaces.ITokensStorage;
 import web.springproject.model.interfaces.IUsersStorage;
 
-@Component("SQLTokensStorage")
+@Repository("SQLTokensStorage")
 @PropertySource("classpath:db.properties")
 public class SQLTokensStorage implements ITokensStorage {
 
