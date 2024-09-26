@@ -51,7 +51,6 @@ public class SQLNotesStorage implements INotesStorage {
         
         List<BaseNote> notes = new ArrayList<>();
 
-
         try {
             String q = "SELECT * FROM notes WHERE userid=\'" + user.login + "\'";
             Statement statement = connection.createStatement();
@@ -84,54 +83,55 @@ public class SQLNotesStorage implements INotesStorage {
             }
             return null;
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
 
+        }
         return null;
     }
 
     @Override
-    public void UpdateNote(final User user, final String id, String text) {
+    public boolean UpdateNote(final User user, final String id, String text) {
 
-        if(user == null) return;
+        if(user == null) return false;
 
         try {
             String q = "UPDATE notes SET txt=\'" + text +  "\'"
             + "WHERE id=\'" + id + "\' AND userid=\'" + user.login + "\'";
             Statement statement = connection.createStatement();
-            statement.execute(q);
+            return statement.execute(q);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     @Override
-    public void AddNote(final User user, final BaseNote note) {
+    public boolean AddNote(final User user, final BaseNote note) {
         
-        if(user == null) return;
+        if(user == null) return false;
 
         try {
             String q = "INSERT INTO notes VALUES(\'" + user.login + "\',\'" + note.uniqueID +  "\',\'" + note.getText() +  "\')";
             Statement statement = connection.createStatement();
-            statement.execute(q);
+            return statement.execute(q);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     @Override
-    public void RemoveNote(final User user, final String id) {
+    public boolean RemoveNote(final User user, final String id) {
 
-        if(user == null) return;
+        if(user == null) return false;
 
         try {
             String q = "DELETE FROM notes WHERE id=\'" + id + "\' AND userid=\'" + user.login + "\'";
             Statement statement = connection.createStatement();
-            statement.execute(q);
+            return statement.execute(q);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
     
 }

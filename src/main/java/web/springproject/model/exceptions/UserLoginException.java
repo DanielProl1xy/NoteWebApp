@@ -1,5 +1,5 @@
 package web.springproject.model.exceptions;
 
-public class LoginException extends Exception {
+public class UserLoginException extends Exception {
     
 }

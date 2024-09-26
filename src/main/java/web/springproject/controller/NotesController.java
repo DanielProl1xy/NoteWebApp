@@ -18,6 +18,8 @@ import web.springproject.model.BaseNote;
 import web.springproject.model.NotesService;
 import web.springproject.model.User;
 import web.springproject.model.UserLoginService;
+import web.springproject.model.exceptions.InvalidNoteException;
+import web.springproject.model.exceptions.UserLoginException;
 
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -47,14 +49,14 @@ public class NotesController {
     }
 
     @RequestMapping("")
-    public String viewNotes(Model model) {
+    public String viewNotes(Model model) throws UserLoginException {
         final User user = (User) model.getAttribute("user");
         model.addAttribute("notes", notesService.GetAllNotes(user));
         return "viewnotes_page";
     }
 
     @GetMapping("/create")
-    public String createNote(Model model) {
+    public String createNote(Model model) throws UserLoginException {
 
         final User user = (User) model.getAttribute("user");
         BaseNote newNote = notesService.CreateNote(user);
@@ -65,7 +67,7 @@ public class NotesController {
     
     @GetMapping("/{noteid}/edit")
     public String edinNote(@PathVariable("noteid") String id,
-                            Model model, RedirectAttributes redirectAttributes) {
+                            Model model, RedirectAttributes redirectAttributes) throws InvalidNoteException, UserLoginException {
         final User user = (User) model.getAttribute("user");
 
         BaseNote note = notesService.GetNote(user, id);
@@ -78,7 +80,7 @@ public class NotesController {
     @GetMapping("/{noteid}/delete")
     public String deleteNote(@PathVariable("noteid") String id,
                             Model model,
-                            RedirectAttributes redirectAttributes) {
+                            RedirectAttributes redirectAttributes) throws InvalidNoteException, UserLoginException {
                                 
         final User user = (User) model.getAttribute("user");
 
@@ -88,7 +90,7 @@ public class NotesController {
     
     @PostMapping("/save")
     public String saveNote(@ModelAttribute("notetext") String text, @RequestParam("noteid") String id, 
-                            Model model, RedirectAttributes redirectAttributes) {
+                            Model model, RedirectAttributes redirectAttributes) throws InvalidNoteException, UserLoginException {
         final User user = (User) model.getAttribute("user");
         notesService.UpdateNote(user, new BaseNote(text, id));
         return "redirect:/notes";
