@@ -60,9 +60,7 @@ public class NotesController {
 
         final User user = (User) model.getAttribute("user");
         BaseNote newNote = notesService.CreateNote(user);
-        model.addAttribute("noteid", newNote.uniqueID);
-        model.addAttribute("action", "edit");
-        return "redirect:/notes/edit";
+        return "redirect:/notes/" + newNote.uniqueID + "/edit";
     }    
     
     @GetMapping("/{noteid}/edit")
