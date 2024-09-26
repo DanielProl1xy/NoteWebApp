@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import web.springproject.model.exceptions.InvalidNoteException;
@@ -15,7 +14,6 @@ import web.springproject.model.interfaces.INotesStorage;
 public class NotesService {
     
     @Autowired
-    @Qualifier("notesStorage")
     INotesStorage notesStorage;
 
     public BaseNote CreateNote(final User user) throws UserLoginException {

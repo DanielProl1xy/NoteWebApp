@@ -3,7 +3,6 @@ package web.springproject.controller;
 import javax.security.auth.login.LoginException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class NotesController {
 
     @Autowired
-    @Qualifier("userLoginServiceBean")
     private UserLoginService loginService;
 
     @Autowired

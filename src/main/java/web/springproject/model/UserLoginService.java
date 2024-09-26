@@ -3,7 +3,6 @@ package web.springproject.model;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +13,9 @@ import web.springproject.model.interfaces.IUsersStorage;
 public class UserLoginService {
 
     @Autowired
-    @Qualifier("usersStorage")
     private IUsersStorage usersStorage; 
 
     @Autowired
-    @Qualifier("tokensStorage")
     private ITokensStorage tokensStorage;
 
     public enum LoginResult {

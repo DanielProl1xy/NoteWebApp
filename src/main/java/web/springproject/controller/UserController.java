@@ -1,7 +1,6 @@
 package web.springproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,15 +18,14 @@ import web.springproject.model.UserLoginService.LoginResult;
 public class UserController {
 
     @Autowired
-    @Qualifier("userLoginServiceBean")
     private UserLoginService loginService;
 
-    @GetMapping("login")
+    @GetMapping("/login")
     public String loginPage(Model model) {
         return "login_page";
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public String loginAction(@RequestParam("login") String login,
                                 @RequestParam("password") String password,
                                 RedirectAttributes redir) {
@@ -45,12 +43,12 @@ public class UserController {
     }
     
 
-    @GetMapping("register")
+    @GetMapping("/register")
     public String registerPage(Model model) {
         return "register_page";
     }
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public String registerAction(@RequestParam("login") String login,
                                 @RequestParam("name") String name,
                                 @RequestParam("password") String password,
@@ -68,7 +66,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public String logoutAction(@RequestParam("token") String token, RedirectAttributes redir) {
         loginService.InvalidateToken(token);
         return "redirect:/login";

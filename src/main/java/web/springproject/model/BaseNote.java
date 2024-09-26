@@ -22,6 +22,6 @@ public class BaseNote {
     
     @Override
     public String toString() {
-        return this.text;
+        return "{ \"id\" : \"" + this.uniqueID + "\", \"text\" : \"" + this.text + "\" }";
     }
 }
