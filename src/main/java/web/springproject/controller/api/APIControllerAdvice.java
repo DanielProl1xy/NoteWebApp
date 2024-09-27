@@ -1,16 +1,15 @@
 package web.springproject.controller.api;
 
-import javax.security.auth.login.LoginException;
-
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import web.springproject.model.exceptions.InvalidNoteException;
+import web.springproject.model.exceptions.UserLoginException;
 
 @RestControllerAdvice
 public class APIControllerAdvice {
 
-    @ExceptionHandler(LoginException.class)
+    @ExceptionHandler(UserLoginException.class)
     public String OnAccessDenied() {
         return "{ \"result\" : \"invalid token\"}";
     }

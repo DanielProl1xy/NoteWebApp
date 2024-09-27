@@ -1,7 +1,5 @@
 package web.springproject.controller;
 
-import javax.security.auth.login.LoginException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,12 +33,12 @@ public class NotesController {
     private NotesService notesService;
 
     @ModelAttribute
-    public void checkAccess(Model model) throws LoginException {
+    public void checkAccess(Model model) throws UserLoginException {
         final String token = (String) model.getAttribute("token");
-        if(token == null) throw new LoginException("Token is null");
-        if(token.isEmpty()) throw new LoginException("Token is emtpy");
+        if(token == null) throw new UserLoginException();
+        if(token.isEmpty()) throw new UserLoginException();
         final User user = loginService.CheckToken(token);
-        if(user == null) throw new LoginException("Ivnalid token");
+        if(user == null) throw new UserLoginException();
 
         model.addAttribute("user", user);
 
