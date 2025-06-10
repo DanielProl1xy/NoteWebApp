@@ -24,7 +24,5 @@ For this script to work  sure to set ```CATALINA_HOME``` to corresponding apache
 And finally, server deploys at 8080 port, and you can connect by ```localhost:8080```.
 
 ## TODOs
-- Data base usage improvment
 - Veryfing connections
-- Multiple users
 - Different cosmetic improvment for better user experience
